@@ -1,7 +1,7 @@
 package org.example.Service;
 
-import org.apache.logging.log4j.LogManager; // Импорт для Log4j
-import org.apache.logging.log4j.Logger;    // Импорт для Logger
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.example.States.ProcessingState;
 import org.example.entity.Terminal;
 import org.example.entity.Truck;
@@ -12,7 +12,6 @@ import java.util.concurrent.TimeUnit;
 
 public final class TerminalDispatcher {
 
-    // Определение логгера для этого класса
     private static final Logger logger = LogManager.getLogger(TerminalDispatcher.class);
 
     private static final Object lock = new Object();

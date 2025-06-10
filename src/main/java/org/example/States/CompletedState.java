@@ -19,10 +19,13 @@ public class CompletedState extends TruckState{
         logisticsBase.releaseTerminal(truck.getTerminal());
 
         logger.info("Truck {} has left the base", truck.getId());
-
+        truck.setProcessed(true);
     }
 
     public void ended(Truck truck){
         logger.info("Truck {} is exiting Completed State", truck.getId());
     }
+
+
+
 }

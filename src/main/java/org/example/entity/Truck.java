@@ -14,10 +14,13 @@ public class Truck implements Runnable {
     private final LogisticsBase logisticsBase;
     private Terminal terminal;
 
+    private boolean isProcessed;
+
     public Truck(int id, boolean isPerishable, LogisticsBase logisticsBase) {
         this.id = id;
         this.isPerishable = isPerishable;
         this.logisticsBase = logisticsBase;
+        this.isProcessed = false;
     }
 
     public void start() {
@@ -54,13 +57,20 @@ public class Truck implements Runnable {
         }
         this.state = newState;
         this.state.entered(this);
-        this.state.process(this);
+    }
+
+    public void setProcessed(boolean isProcessed){
+        this.isProcessed = isProcessed;
     }
 
     @Override
     public void run() {
+        enterState(new WaitingState());
         System.out.println("Truck " + id + "get started");
-        start();
+        while (!isProcessed){
+            this.state.process(this);
+
+        }
     }
 
     @Override
