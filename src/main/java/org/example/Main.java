@@ -45,6 +45,6 @@ public class Main {
             }
         }
         logger.info("All trucks have been processed");
-
+        TerminalDispatcher.getInstance().setWorking(false);
     }
 }

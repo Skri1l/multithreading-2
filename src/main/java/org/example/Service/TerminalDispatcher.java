@@ -15,6 +15,8 @@ public final class TerminalDispatcher {
     private final Queue queue;
     private final ExecutorService executor;
 
+    private boolean isWorking = true;
+
     private TerminalDispatcher(Queue queue, int threadPoolSize) {
         this.queue = queue;
         this.executor = Executors.newFixedThreadPool(threadPoolSize);
@@ -50,10 +52,14 @@ public final class TerminalDispatcher {
         }
     }
 
+    public void setWorking(boolean isWorking){
+        this.isWorking = isWorking;
+    }
+
     private void startDispatching() {
         logger.info("Dispatcher started");
         Runnable dispatcherTask = () -> {
-            while (true) {
+            while (isWorking) {
                 try {
                     logger.info("Dispatcher checking queue");
                     if (!queue.isEmpty()) {
