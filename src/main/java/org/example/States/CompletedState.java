@@ -14,12 +14,14 @@ public class CompletedState extends TruckState{
     @Override
     public void process(Truck truck) {
         LogisticsBase logisticsBase = truck.getLogisticsBase();
-        logger.info("Truck {} is in Processing State", truck.getId());
+        logger.info("Truck {} is in Completed State", truck.getId());
 
         logisticsBase.releaseTerminal(truck.getTerminal());
 
         logger.info("Truck {} has left the base", truck.getId());
         truck.setProcessed(true);
+        logger.info("Truck {} set to processed", truck.getId());
+
     }
 
     public void ended(Truck truck){

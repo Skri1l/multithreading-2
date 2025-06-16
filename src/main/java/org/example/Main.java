@@ -1,5 +1,7 @@
 package org.example;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.example.Data.DataConfigurer;
 import org.example.Service.LogisticsBase;
 import org.example.Service.Queue;
@@ -7,8 +9,11 @@ import org.example.Service.TerminalDispatcher;
 import org.example.entity.Truck;
 
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 
 public class Main {
+    private static final Logger logger = LogManager.getLogger(Main.class);
+
     public static void main(String[] args) {
         DataConfigurer.loadTerminalCountFromConfig("src/main/resources/config.json");
         DataConfigurer.loadQueueCapacityFromConfig("src/main/resources/config.json");
@@ -30,5 +35,16 @@ public class Main {
         for (Truck truck : trucks) {
             new Thread(truck).start();
         }
+
+        while (trucks.stream().anyMatch(t -> !t.isProcessed())) {
+            try {
+                TimeUnit.SECONDS.sleep(1);
+                logger.info("Waiting for trucks to be processed...");
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+        }
+        logger.info("All trucks have been processed");
+
     }
 }

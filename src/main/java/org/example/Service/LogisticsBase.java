@@ -1,6 +1,5 @@
 package org.example.Service;
-
-
+import org.example.States.CompletedState;
 import org.example.entity.Terminal;
 
 import java.util.ArrayList;
@@ -8,10 +7,15 @@ import java.util.List;
 import java.util.concurrent.Semaphore;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+import org.example.entity.Truck;
 
 import static org.example.Data.DataConfigurer.getTerminalCount;
 
 public final class LogisticsBase {
+
+    private static final Logger logger = LogManager.getLogger(LogisticsBase.class);
 
     private static LogisticsBase instance;
     private final Semaphore terminals;

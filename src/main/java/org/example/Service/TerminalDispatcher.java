@@ -3,7 +3,6 @@ package org.example.Service;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.example.States.ProcessingState;
-import org.example.entity.Terminal;
 import org.example.entity.Truck;
 
 import java.util.concurrent.ExecutorService;
@@ -11,12 +10,8 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
 
 public final class TerminalDispatcher {
-
     private static final Logger logger = LogManager.getLogger(TerminalDispatcher.class);
-
-    private static final Object lock = new Object();
     private static TerminalDispatcher instance;
-
     private final Queue queue;
     private final ExecutorService executor;
 
@@ -43,38 +38,43 @@ public final class TerminalDispatcher {
         boolean added = queue.addTruck(truck);
         if (!added) {
             logger.warn("Не удалось добавить грузовик {} в очередь: очередь заполнена", truck.getId());
-            while (!queue.addTruck(truck)) {
-                try {
-                    TimeUnit.MILLISECONDS.sleep(100);
-                } catch (InterruptedException e) {
-                    Thread.currentThread().interrupt();
-                }
+            try {
+                TimeUnit.MILLISECONDS.sleep(100);
+                submitTruck(truck);
+            } catch (InterruptedException e) {
+                logger.error("Interrupted while retrying to add Truck {}", truck.getId(), e);
+                Thread.currentThread().interrupt();
             }
+        } else {
+            logger.info("Truck {} added to queue", truck.getId());
         }
     }
 
     private void startDispatching() {
+        logger.info("Dispatcher started");
         Runnable dispatcherTask = () -> {
             while (true) {
-                if (!queue.isEmpty()) {
-                    Truck truck = queue.pollTruck();
-                    if (truck != null) {
-                        Terminal terminal = truck.getLogisticsBase().acquireAvailableTerminal();
-                        truck.setTerminal(terminal);
-                        truck.enterState(new ProcessingState());
+                try {
+                    logger.info("Dispatcher checking queue");
+                    if (!queue.isEmpty()) {
+                        Truck truck = queue.pollTruck();
+                        if (truck != null) {
+                            logger.info("Polled Truck {} from queue", truck.getId());
+                            executor.submit(() -> {
+                                truck.enterState(new ProcessingState());
+                            });
+                        }
+                    } else {
+                        TimeUnit.MILLISECONDS.sleep(100);
                     }
-                } else {
-                    try {
-                        TimeUnit.SECONDS.sleep(1);
-                    } catch (InterruptedException e) {
-                        Thread.currentThread().interrupt();
-                        break;
-                    }
+                } catch (InterruptedException e) {
+                    logger.error("Dispatcher interrupted", e);
+                    Thread.currentThread().interrupt();
+                    break;
                 }
             }
         };
         Thread dispatcherThread = new Thread(dispatcherTask);
-        dispatcherThread.setDaemon(true);
-        dispatcherThread.start();
+        dispatcherThread.start(); // Убрали setDaemon(true)
     }
 }
