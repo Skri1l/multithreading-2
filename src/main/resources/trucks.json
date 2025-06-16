@@ -1,4 +1,6 @@
 [{"id": 1,"isPerishable": true},
   {"id": 2,"isPerishable": false},
-  {"id": 3,"isPerishable": false}
+  {"id": 3,"isPerishable": false},
+  {"id": 4,"isPerishable": true},
+  {"id": 5,"isPerishable": false}
 ]

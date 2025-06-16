@@ -6,6 +6,7 @@ import org.example.Service.LogisticsBase;
 import org.example.States.TruckState;
 import org.example.States.WaitingState;
 
+import java.util.concurrent.TimeUnit;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 
@@ -91,7 +92,7 @@ public class Truck implements Runnable {
         while (!isProcessed) {
             state.process(this);
             try {
-                Thread.sleep(100);
+                TimeUnit.MILLISECONDS.sleep(100);
             } catch (InterruptedException e) {
                 logger.error("Truck {} interrupted", id, e);
                 Thread.currentThread().interrupt();

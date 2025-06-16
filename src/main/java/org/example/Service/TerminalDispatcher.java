@@ -81,6 +81,6 @@ public final class TerminalDispatcher {
             }
         };
         Thread dispatcherThread = new Thread(dispatcherTask);
-        dispatcherThread.start(); // Убрали setDaemon(true)
+        dispatcherThread.start();
     }
 }
